@@ -1,35 +1,22 @@
 {
-  "name": "cordova-plugin-wisepush",
-  "version": "0.0.1",
-  "description": "Cordova Wisepush Plugin",
+  "name": "cordova-plugin-bixolon-printer",
+  "version": "1.0.0",
+  "description": "",
   "cordova": {
-    "id": "cordova-plugin-wisepush",
+    "id": "cordova-plugin-bixolon-printer",
     "platforms": [
       "android"
     ]
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hansol-shin/cordova-plugin-wisepush.git"
+    "url": "https://itsmavengers@bitbucket.org/itsm-avengers/cordova-plugin-bixolon-printer.git"
   },
   "keywords": [
-    "cordova",
-    "wisepush",
-    "push",
-    "plugin",
     "ecosystem:cordova",
-    "cordova-android"
+    "cordova-android",
+    "bixolon"
   ],
-  "engines": [
-    {
-      "name": "cordova-android",
-      "version": ">=4.0.0"
-    }
-  ],
-  "author": "hansol-shin",
-  "license": "Apache 2.0",
-  "bugs": {
-    "url": "https://github.com/hansol-shin/cordova-plugin-wisepush/issues"
-  },
-  "homepage": "https://github.com/hansol-shin/cordova-plugin-wisepush#readme"
+  "author": "itsm",
+  "license": "itsm"
 }
