@@ -22,6 +22,8 @@ import org.json.JSONObject;
 
 import com.bixolon.printer.BixolonPrinter;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Set;
 
 public class BIXOLON extends CordovaPlugin {
@@ -216,7 +218,7 @@ public class BIXOLON extends CordovaPlugin {
       else if (action.equals("print")) {
         try {
           String title = args.getString(0);
-          String text = args.getString(1);
+          JSONArray arr = args.getJSONArray(1);
 
           mBixolonPrinter.lineFeed(1, false);
           mBixolonPrinter.printText(title,
@@ -224,7 +226,53 @@ public class BIXOLON extends CordovaPlugin {
             BixolonPrinter.TEXT_ATTRIBUTE_EMPHASIZED | BixolonPrinter.TEXT_ATTRIBUTE_FONT_C,
             BixolonPrinter.TEXT_SIZE_HORIZONTAL2 | BixolonPrinter.TEXT_SIZE_VERTICAL2,
             false);
-          mBixolonPrinter.printText(text,
+          mBixolonPrinter.printText("------------------------------------------\n" +
+              "NO 메뉴명                             수량\n" +
+              "------------------------------------------",
+            BixolonPrinter.ALIGNMENT_LEFT,
+            BixolonPrinter.TEXT_ATTRIBUTE_EMPHASIZED | BixolonPrinter.TEXT_ATTRIBUTE_FONT_A,
+            BixolonPrinter.TEXT_SIZE_HORIZONTAL1 | BixolonPrinter.TEXT_SIZE_VERTICAL1,
+            false);
+
+          String strPrintData = "";
+          try {
+            for (int i = 0; i < arr.length(); i++) {
+              JSONObject rec = arr.getJSONObject(i);
+              int cnt = rec.getInt("cnt");
+              JSONObject menu = rec.getJSONObject("menu");
+              String name = menu.getJSONObject("name").getString("ko");
+              String strOpt = "옵션: ";
+
+              JSONArray opts = null;
+              try {
+                opts = rec.getJSONArray("opts");
+                for (int j = 0; j < opts.length(); j++) {
+                  JSONObject opt = opts.getJSONObject(j);
+                  if (j != 0)
+                    strOpt += ", ";
+                  strOpt += opt.getString("name");
+                }
+              } catch (Exception e) {
+
+              }
+
+              strPrintData += format(i+1, name, cnt) + "\n";
+              if (opts != null && opts.length() > 0)
+                strPrintData += strOpt + "\n";
+              strPrintData += "------------------------------------------\n";
+            }
+          } catch (Exception e) {
+
+          }
+          mBixolonPrinter.printText(strPrintData,
+            BixolonPrinter.ALIGNMENT_LEFT,
+            BixolonPrinter.TEXT_ATTRIBUTE_EMPHASIZED | BixolonPrinter.TEXT_ATTRIBUTE_FONT_A,
+            BixolonPrinter.TEXT_SIZE_HORIZONTAL1 | BixolonPrinter.TEXT_SIZE_VERTICAL1,
+            false);
+
+          SimpleDateFormat df = new SimpleDateFormat("yyyy년 MM월 dd일 hh시 mm분 ss초");
+          Date date = new Date();
+          mBixolonPrinter.printText("주문시간: " + df.format(date),
             BixolonPrinter.ALIGNMENT_LEFT,
             BixolonPrinter.TEXT_ATTRIBUTE_EMPHASIZED | BixolonPrinter.TEXT_ATTRIBUTE_FONT_A,
             BixolonPrinter.TEXT_SIZE_HORIZONTAL1 | BixolonPrinter.TEXT_SIZE_VERTICAL1,
@@ -247,5 +295,29 @@ public class BIXOLON extends CordovaPlugin {
     }
 
     return true;
+  }
+
+  private String format(int no, String name, int cnt) {
+    String str = String.format("%02d ", no);
+    int n = 0;
+    StringBuffer sb = new StringBuffer();
+    for (int i = 0; i < 35; i++) {
+      String ch = " ";
+      if (name.length() > i && n < 34) {
+        ch = String.valueOf(name.charAt(i));
+        n += ch.matches("[a-zA-Z0-9]|\\s|\\W") ? 1 : 2;
+      } else {
+        n++;
+      }
+
+      if (n > 35)
+        break;
+
+      sb.append(ch);
+    }
+
+    str += sb.toString();
+    str += String.format("%s개", (cnt < 10 ? " " : "") + String.valueOf(cnt));
+    return str;
   }
 }
